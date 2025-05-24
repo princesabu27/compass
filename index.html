@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/compass_icon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compass</title>
+    <script type="module" crossorigin src="/assets/index-DrXPqgc4.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DZmgzm7o.css">
+  </head>
+  <body class="bg-custom-image bg-cover bg-center h-dvh w-dvw">
+    <div class=" h-dvh w-dvw flex items-center justify-center">
+      <div
+        class="h-100 w-80 bg-white/10 backdrop-blur-lg shadow-2xl rounded-lg flex items-center justify-center"
+      >
+        <div class="flex flex-col w-76 h-96">
+          <div>
+            <h1 class="font-bold text-4xl text-center mt-8 cursor-pointer">
+              Compass
+            </h1>
+          </div>
+          <form id="loginForm" aria-describedby="error" class="mt-4">
+            <!-- Username -->
+            <div>
+              <div class="input-container">
+                <input type="text" id="usernameInput" required="" title="Username"  />
+                <label for="usernameInput" class="label">Username</label>
+                <div class="underline"></div>
+              </div>
+            </div>
+            <!-- Password -->
+            <div>
+              <div class="input-container">
+                <input type="password" id="passwordInput" required="" title="Password"  />
+                <label for="passwordInput" class="label">Password</label>
+                <div class="underline"></div>
+              </div>
+            </div>
+
+            <!-- Error message -->
+            <div class="m-0 flex justify-center">
+              <div class="w-[250px] h-5">
+                <p id="error"
+                  class="text-xs text-right text-red-600 cursor-pointer"
+                >
+                  
+                </p>
+              </div>
+            </div>
+
+            <!-- Button -->
+            <div class="mt-8 flex justify-center">
+              <button
+                id="loginButton"
+                type="submit"
+                class="w-[250px] px-8 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+              >
+                Login
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
