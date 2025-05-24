@@ -9,6 +9,22 @@ const DOM = {
   loginButton: document.getElementById("loginButton"),
 };
 
+// Store CSRF token
+let csrfToken = null;
+
+// Fetch CSRF token
+async function fetchCsrfToken() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/csrf-token`, {
+      credentials: 'include'
+    });
+    const data = await response.json();
+    csrfToken = data.csrfToken;
+  } catch (error) {
+    console.error('Failed to fetch CSRF token:', error);
+  }
+}
+
 function resetLoginButton() {
   DOM.loginButton.disabled = false;
   DOM.loginButton.textContent = "Login";
@@ -41,6 +57,11 @@ function clearError() {
 async function handleLogin(e) {
   e.preventDefault();
 
+  if (!csrfToken) {
+    showError("Security token not available. Please refresh the page.");
+    return;
+  }
+
   if (
     !DOM.loginForm ||
     !DOM.username ||
@@ -70,9 +91,7 @@ async function handleLogin(e) {
       password,
       passwordRegex.test(password)
     );
-    showError(
-      "Wrong password"
-    );
+    showError("Wrong password");
     return;
   }
 
@@ -91,6 +110,7 @@ async function handleLogin(e) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRF-Token": csrfToken
       },
       body: JSON.stringify({ username, password }),
       signal: controller.signal,
@@ -117,6 +137,8 @@ async function handleLogin(e) {
 
 function initializeLoginForm() {
   if (DOM.loginForm) {
+    // Fetch CSRF token when page loads
+    fetchCsrfToken();
     DOM.loginForm.addEventListener("submit", handleLogin);
   } else {
     console.error("Login form not found");
@@ -124,3 +146,5 @@ function initializeLoginForm() {
 }
 
 document.addEventListener("DOMContentLoaded", initializeLoginForm);
+
+

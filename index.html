@@ -8,7 +8,7 @@
     <title>Compass</title>
   </head>
   <body class="bg-custom-image bg-cover bg-center h-dvh w-dvw">
-    <div class=" h-dvh w-dvw flex items-center justify-center">
+    <div class="h-dvh w-dvw flex items-center justify-center">
       <div
         class="h-100 w-80 bg-white/10 backdrop-blur-lg shadow-2xl rounded-lg flex items-center justify-center"
       >
@@ -19,10 +19,18 @@
             </h1>
           </div>
           <form id="loginForm" aria-describedby="error" class="mt-4">
+            <input type="hidden" id="csrfToken" name="_csrf" />
             <!-- Username -->
             <div>
               <div class="input-container">
-                <input type="text" id="usernameInput" required="" title="Username"  />
+                <input
+                  type="text"
+                  id="usernameInput"
+                  required=""
+                  title="Username"
+                  required
+                  aria-required="true"
+                />
                 <label for="usernameInput" class="label">Username</label>
                 <div class="underline"></div>
               </div>
@@ -30,7 +38,14 @@
             <!-- Password -->
             <div>
               <div class="input-container">
-                <input type="password" id="passwordInput" required="" title="Password"  />
+                <input
+                  type="password"
+                  id="passwordInput"
+                  required=""
+                  title="Password"
+                  required
+                  aria-required="true"
+                />
                 <label for="passwordInput" class="label">Password</label>
                 <div class="underline"></div>
               </div>
@@ -39,17 +54,17 @@
             <!-- Error message -->
             <div class="m-0 flex justify-center">
               <div class="w-[250px] h-5">
-                <p id="error"
+                <p
+                  id="error"
                   class="text-xs text-right text-red-600 cursor-pointer"
-                >
-                  
-                </p>
+                ></p>
               </div>
             </div>
 
             <!-- Button -->
             <div class="mt-8 flex justify-center">
               <button
+                aria-disabled="false"
                 id="loginButton"
                 type="submit"
                 class="w-[250px] px-8 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
