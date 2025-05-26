@@ -1,1 +1,139 @@
-(function(){const n=document.createElement("link").relList;if(n&&n.supports&&n.supports("modulepreload"))return;for(const t of document.querySelectorAll('link[rel="modulepreload"]'))u(t);new MutationObserver(t=>{for(const r of t)if(r.type==="childList")for(const i of r.addedNodes)i.tagName==="LINK"&&i.rel==="modulepreload"&&u(i)}).observe(document,{childList:!0,subtree:!0});function l(t){const r={};return t.integrity&&(r.integrity=t.integrity),t.referrerPolicy&&(r.referrerPolicy=t.referrerPolicy),t.crossOrigin==="use-credentials"?r.credentials="include":t.crossOrigin==="anonymous"?r.credentials="omit":r.credentials="same-origin",r}function u(t){if(t.ep)return;t.ep=!0;const r=l(t);fetch(t.href,r)}})();const d="https://959f-14-96-14-58.ngrok-free.app",e={loginForm:document.getElementById("loginForm"),username:document.getElementById("usernameInput"),password:document.getElementById("passwordInput"),errorMessage:document.getElementById("error"),loginButton:document.getElementById("loginButton")};let c=null;async function f(){try{const o=await fetch(`${d}/csrf-token`,{method:"GET",credentials:"include"});if(!o.ok)throw new Error(`Failed to fetch CSRF token: ${o.status}`);c=(await o.json()).csrfToken}catch(o){console.error("Failed to fetch CSRF token:",o.message),s("Failed to fetch security token. Please refresh the page.")}}function g(){e.loginButton.disabled=!1,e.loginButton.textContent="Login",e.loginButton.className="w-[250px] bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",e.loginButton.setAttribute("aria-disabled","false")}function m(o){try{return new URL(o),!0}catch{return!1}}function s(o){e.errorMessage.textContent=o,e.errorMessage.classList.remove("error-hidden"),e.errorMessage.classList.add("error-visible")}function p(){e.errorMessage.textContent="",e.errorMessage.classList.remove("error-visible"),e.errorMessage.classList.add("error-hidden")}async function h(o){if(o.preventDefault(),!c){s("Security token not available. Please refresh the page.");return}if(!e.loginForm||!e.username||!e.password||!e.errorMessage||!e.loginButton){console.error("One or more DOM elements not found");return}const n=e.username.value.trim(),l=e.password.value.trim();if(!/^[a-zA-Z0-9]{6,12}$/.test(n)){s("Username must be 6–12 alphanumeric characters");return}if(!/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*\-_+=]{6,15}$/.test(l)){s("Wrong password");return}p(),e.loginButton.disabled=!0,e.loginButton.textContent="Logging in...",e.loginButton.className="w-[250px] bg-blue-300 text-black py-2 px-4 rounded-md cursor-not-allowed opacity-50",e.loginButton.setAttribute("aria-disabled","true");try{const t=new AbortController,r=setTimeout(()=>t.abort(),2e4),i=await fetch(`${d}/login`,{method:"POST",headers:{"Content-Type":"application/json","X-CSRF-Token":c},body:JSON.stringify({username:n,password:l}),signal:t.signal,credentials:"include"});clearTimeout(r);const a=await i.json();if(!i.ok)throw new Error(a.error||a.errorMessage||"Login failed");if(a.redirectUrl&&m(a.redirectUrl))window.location.href=a.redirectUrl;else throw new Error("Invalid redirect URL")}catch(t){t.name==="AbortError"?s("Request timed out. Please try again."):s(t.message||"An error occurred during login"),g()}}async function y(){if(e.loginForm){if(await f(),!c){s("Failed to initialize security token. Please refresh the page."),e.loginButton.disabled=!0;return}e.loginForm.addEventListener("submit",h)}else console.error("Login form not found")}document.addEventListener("DOMContentLoaded",y);
+(function () {
+  const n = document.createElement("link").relList;
+  if (n && n.supports && n.supports("modulepreload")) return;
+  for (const t of document.querySelectorAll('link[rel="modulepreload"]')) u(t);
+  new MutationObserver((t) => {
+    for (const r of t)
+      if (r.type === "childList")
+        for (const i of r.addedNodes)
+          i.tagName === "LINK" && i.rel === "modulepreload" && u(i);
+  }).observe(document, { childList: !0, subtree: !0 });
+  function l(t) {
+    const r = {};
+    return (
+      t.integrity && (r.integrity = t.integrity),
+      t.referrerPolicy && (r.referrerPolicy = t.referrerPolicy),
+      t.crossOrigin === "use-credentials"
+        ? (r.credentials = "include")
+        : t.crossOrigin === "anonymous"
+        ? (r.credentials = "omit")
+        : (r.credentials = "same-origin"),
+      r
+    );
+  }
+  function u(t) {
+    if (t.ep) return;
+    t.ep = !0;
+    const r = l(t);
+    fetch(t.href, r);
+  }
+})();
+const d = "https://959f-14-96-14-58.ngrok-free.app",
+  e = {
+    loginForm: document.getElementById("loginForm"),
+    username: document.getElementById("usernameInput"),
+    password: document.getElementById("passwordInput"),
+    errorMessage: document.getElementById("error"),
+    loginButton: document.getElementById("loginButton"),
+  };
+let c = null;
+async function f() {
+  try {
+    const o = await fetch(`${d}/csrf-token`, {
+      method: "GET",
+    });
+    if (!o.ok) throw new Error(`Failed to fetch CSRF token: ${o.status}`);
+    c = (await o.json()).csrfToken;
+  } catch (o) {
+    console.error("Failed to fetch CSRF token:", o.message),
+      s("Failed to fetch security token. Please refresh the page.");
+  }
+}
+function g() {
+  (e.loginButton.disabled = !1),
+    (e.loginButton.textContent = "Login"),
+    (e.loginButton.className =
+      "w-[250px] bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"),
+    e.loginButton.setAttribute("aria-disabled", "false");
+}
+function m(o) {
+  try {
+    return new URL(o), !0;
+  } catch {
+    return !1;
+  }
+}
+function s(o) {
+  (e.errorMessage.textContent = o),
+    e.errorMessage.classList.remove("error-hidden"),
+    e.errorMessage.classList.add("error-visible");
+}
+function p() {
+  (e.errorMessage.textContent = ""),
+    e.errorMessage.classList.remove("error-visible"),
+    e.errorMessage.classList.add("error-hidden");
+}
+async function h(o) {
+  if ((o.preventDefault(), !c)) {
+    s("Security token not available. Please refresh the page.");
+    return;
+  }
+  if (
+    !e.loginForm ||
+    !e.username ||
+    !e.password ||
+    !e.errorMessage ||
+    !e.loginButton
+  ) {
+    console.error("One or more DOM elements not found");
+    return;
+  }
+  const n = e.username.value.trim(),
+    l = e.password.value.trim();
+  if (!/^[a-zA-Z0-9]{6,12}$/.test(n)) {
+    s("Username must be 6–12 alphanumeric characters");
+    return;
+  }
+  if (!/^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*\-_+=]{6,15}$/.test(l)) {
+    s("Wrong password");
+    return;
+  }
+  p(),
+    (e.loginButton.disabled = !0),
+    (e.loginButton.textContent = "Logging in..."),
+    (e.loginButton.className =
+      "w-[250px] bg-blue-300 text-black py-2 px-4 rounded-md cursor-not-allowed opacity-50"),
+    e.loginButton.setAttribute("aria-disabled", "true");
+  try {
+    const t = new AbortController(),
+      r = setTimeout(() => t.abort(), 2e4),
+      i = await fetch(`${d}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRF-Token": c },
+        body: JSON.stringify({ username: n, password: l }),
+        signal: t.signal,
+        credentials: "include",
+      });
+    clearTimeout(r);
+    const a = await i.json();
+    if (!i.ok) throw new Error(a.error || a.errorMessage || "Login failed");
+    if (a.redirectUrl && m(a.redirectUrl)) window.location.href = a.redirectUrl;
+    else throw new Error("Invalid redirect URL");
+  } catch (t) {
+    t.name === "AbortError"
+      ? s("Request timed out. Please try again.")
+      : s(t.message || "An error occurred during login"),
+      g();
+  }
+}
+async function y() {
+  if (e.loginForm) {
+    if ((await f(), !c)) {
+      s("Failed to initialize security token. Please refresh the page."),
+        (e.loginButton.disabled = !0);
+      return;
+    }
+    e.loginForm.addEventListener("submit", h);
+  } else console.error("Login form not found");
+}
+document.addEventListener("DOMContentLoaded", y);
