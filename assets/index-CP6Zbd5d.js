@@ -41,6 +41,7 @@ async function f() {
   try {
     const o = await fetch(`${d}/csrf-token`, {
       method: "GET",
+      credentials: "include",
     });
     if (!o.ok) throw new Error(`Failed to fetch CSRF token: ${o.status}`);
     c = (await o.json()).csrfToken;
