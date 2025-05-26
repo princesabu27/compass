@@ -28,7 +28,7 @@
     fetch(t.href, r);
   }
 })();
-const u = "https://959f-14-96-14-58.ngrok-free.app ",
+const u = "https://959f-14-96-14-58.ngrok-free.app",
   e = {
     loginForm: document.getElementById("loginForm"),
     username: document.getElementById("usernameInput"),
