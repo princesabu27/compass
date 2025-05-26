@@ -1,5 +1,5 @@
 import "./style.css";
-const API_BASE_URL = "http://localhost:3030";
+const API_BASE_URL = "https://959f-14-96-14-58.ngrok-free.app";
 
 const DOM = {
   loginForm: document.getElementById("loginForm"),
@@ -9,19 +9,22 @@ const DOM = {
   loginButton: document.getElementById("loginButton"),
 };
 
-// Store CSRF token
 let csrfToken = null;
 
-// Fetch CSRF token
 async function fetchCsrfToken() {
   try {
     const response = await fetch(`${API_BASE_URL}/csrf-token`, {
-      credentials: 'include'
+      method: "GET",
+      credentials: "include",
     });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch CSRF token: ${response.status}`);
+    }
     const data = await response.json();
     csrfToken = data.csrfToken;
   } catch (error) {
-    console.error('Failed to fetch CSRF token:', error);
+    console.error("Failed to fetch CSRF token:", error.message);
+    showError("Failed to fetch security token. Please refresh the page.");
   }
 }
 
@@ -29,7 +32,7 @@ function resetLoginButton() {
   DOM.loginButton.disabled = false;
   DOM.loginButton.textContent = "Login";
   DOM.loginButton.className =
-    " w-[250px] bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
+    "w-[250px] bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2";
   DOM.loginButton.setAttribute("aria-disabled", "false");
 }
 
@@ -76,21 +79,14 @@ async function handleLogin(e) {
   const username = DOM.username.value.trim();
   const password = DOM.password.value.trim();
 
-  // Validate username (6-12 chars, alphanumeric only)
   if (!/^[a-zA-Z0-9]{6,12}$/.test(username)) {
     showError("Username must be 6–12 alphanumeric characters");
     return;
   }
 
-  // Validate password (6-15 chars, at least one letter and one number, special characters allowed)
   const passwordRegex =
     /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*\-_+=]{6,15}$/;
   if (!passwordRegex.test(password)) {
-    console.log(
-      "Password validation failed:",
-      password,
-      passwordRegex.test(password)
-    );
     showError("Wrong password");
     return;
   }
@@ -99,7 +95,7 @@ async function handleLogin(e) {
   DOM.loginButton.disabled = true;
   DOM.loginButton.textContent = "Logging in...";
   DOM.loginButton.className =
-    " w-[250px] bg-blue-300 text-black py-2 px-4 rounded-md cursor-not-allowed opacity-50";
+    "w-[250px] bg-blue-300 text-black py-2 px-4 rounded-md cursor-not-allowed opacity-50";
   DOM.loginButton.setAttribute("aria-disabled", "true");
 
   try {
@@ -110,7 +106,7 @@ async function handleLogin(e) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRF-Token": csrfToken
+        "X-CSRF-Token": csrfToken,
       },
       body: JSON.stringify({ username, password }),
       signal: controller.signal,
@@ -121,7 +117,7 @@ async function handleLogin(e) {
     const responseData = await loginResponse.json();
 
     if (!loginResponse.ok) {
-      throw new Error(responseData.errorMessage || "Login failed");
+      throw new Error(responseData.error || responseData.errorMessage || "Login failed");
     }
 
     if (responseData.redirectUrl && isValidUrl(responseData.redirectUrl)) {
@@ -130,15 +126,23 @@ async function handleLogin(e) {
       throw new Error("Invalid redirect URL");
     }
   } catch (error) {
-    showError(error.message || "An error occurred");
+    if (error.name === "AbortError") {
+      showError("Request timed out. Please try again.");
+    } else {
+      showError(error.message || "An error occurred during login");
+    }
     resetLoginButton();
   }
 }
 
-function initializeLoginForm() {
+async function initializeLoginForm() {
   if (DOM.loginForm) {
-    // Fetch CSRF token when page loads
-    fetchCsrfToken();
+    await fetchCsrfToken();
+    if (!csrfToken) {
+      showError("Failed to initialize security token. Please refresh the page.");
+      DOM.loginButton.disabled = true;
+      return;
+    }
     DOM.loginForm.addEventListener("submit", handleLogin);
   } else {
     console.error("Login form not found");
@@ -146,5 +150,3 @@ function initializeLoginForm() {
 }
 
 document.addEventListener("DOMContentLoaded", initializeLoginForm);
-
-
